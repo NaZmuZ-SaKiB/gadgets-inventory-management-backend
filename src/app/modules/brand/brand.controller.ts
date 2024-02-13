@@ -1,0 +1,41 @@
+import httpStatus from 'http-status';
+import catchAsync from '../../utils/catchAsync';
+import sendResponse from '../../utils/sendResponse';
+import { Brand } from './brand.model';
+import AppError from '../../errors/AppError';
+
+const createBrand = catchAsync(async (req, res) => {
+  const isBrand = await Brand.findOne({ name: req.body?.name?.toUpperCase() });
+
+  if (isBrand) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `Brand : ${req.body?.name} already exists.`,
+    );
+  }
+
+  const brand = await Brand.create({ name: req.body?.name?.toUpperCase() });
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: 'Breand Created.',
+    data: brand,
+  });
+});
+
+const getAllBrands = catchAsync(async (req, res) => {
+  const brands = await Brand.find();
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Fetched all brands.',
+    data: brands,
+  });
+});
+
+export const BrandController = {
+  createBrand,
+  getAllBrands,
+};
