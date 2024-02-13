@@ -39,6 +39,7 @@ const productSchema = new Schema<TProduct>(
     imgUrl: {
       type: String,
       trim: true,
+      required: true,
     },
     brand: {
       type: Schema.Types.ObjectId,
@@ -52,6 +53,11 @@ const productSchema = new Schema<TProduct>(
     },
     releaseDate: {
       type: Date,
+      required: true,
+    },
+    addedBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
     },
     operatingSystem: {

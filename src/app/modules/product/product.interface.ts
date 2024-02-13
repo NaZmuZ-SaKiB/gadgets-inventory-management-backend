@@ -24,11 +24,12 @@ export type TProduct = {
   quantity: number;
   cost: number;
   price: number;
-  imgUrl?: string;
+  imgUrl: string;
   description: string;
   brand: Types.ObjectId;
   category: Types.ObjectId;
   releaseDate: Date;
+  addedBy: Types.ObjectId;
   operatingSystem?: TOperatingSystem;
   connectivity?: TConnectivity[];
   weight?: number;
