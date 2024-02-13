@@ -5,9 +5,9 @@ import { SaleController } from './sale.controller';
 const SaleRouter = Router();
 
 // GET
-SaleRouter.get('/', auth, SaleController.getAllSales);
+SaleRouter.get('/', auth(), SaleController.getAllSales);
 
 // POST
-SaleRouter.post('/', auth, SaleController.createSale);
+SaleRouter.post('/', auth(), SaleController.createSale);
 
 export default SaleRouter;

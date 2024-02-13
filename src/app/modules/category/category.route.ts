@@ -5,9 +5,9 @@ import auth from '../../middlewares/auth';
 const CategoryRouter = Router();
 
 // GET
-CategoryRouter.get('/', auth, CategoryController.getAllCategories);
+CategoryRouter.get('/', auth(), CategoryController.getAllCategories);
 
 // POST
-CategoryRouter.post('/', auth, CategoryController.createCategory);
+CategoryRouter.post('/', auth(), CategoryController.createCategory);
 
 export default CategoryRouter;

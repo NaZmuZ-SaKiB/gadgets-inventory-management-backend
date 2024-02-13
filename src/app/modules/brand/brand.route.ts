@@ -5,9 +5,9 @@ import auth from '../../middlewares/auth';
 const BrandRouter = Router();
 
 // GET
-BrandRouter.get('/', auth, BrandController.getAllBrands);
+BrandRouter.get('/', auth(), BrandController.getAllBrands);
 
 // POST
-BrandRouter.post('/', auth, BrandController.createBrand);
+BrandRouter.post('/', auth(), BrandController.createBrand);
 
 export default BrandRouter;

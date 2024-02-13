@@ -5,7 +5,7 @@ import auth from '../../middlewares/auth';
 const UserRouter = Router();
 
 // GET
-UserRouter.get('/status', auth, UserController.isUserLoggedIn);
+UserRouter.get('/status', auth(), UserController.isUserLoggedIn);
 
 // POST
 UserRouter.post('/sign-up', UserController.signup);
