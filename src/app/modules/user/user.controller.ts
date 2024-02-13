@@ -22,6 +22,7 @@ const signup = catchAsync(async (req, res) => {
   const token = createToken(
     user._id.toString(),
     user.role,
+    user.email,
     config.jwt_access_secret as string,
     config.jwt_access_expires_in as string,
   );
@@ -61,6 +62,7 @@ const signin = catchAsync(async (req, res) => {
   const token = createToken(
     user._id.toString(),
     user.role,
+    user.email,
     config.jwt_access_secret as string,
     config.jwt_access_expires_in as string,
   );
