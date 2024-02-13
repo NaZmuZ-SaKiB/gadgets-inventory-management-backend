@@ -4,8 +4,11 @@ import sendResponse from '../../utils/sendResponse';
 import { Product } from './product.model';
 import AppError from '../../errors/AppError';
 import { generateProductQuery } from './product.query';
+import { USER_ROLE } from '../user/user.constant';
 
 const createProduct = catchAsync(async (req, res) => {
+  const user = req.user;
+
   const isProduct = await Product.findOne({
     name: req.body?.name,
     model: req.body?.model,
@@ -19,7 +22,7 @@ const createProduct = catchAsync(async (req, res) => {
     );
   }
 
-  const product = await Product.create(req.body);
+  const product = await Product.create({ ...req.body, addedBy: user.id });
 
   sendResponse(res, {
     success: true,
@@ -30,7 +33,16 @@ const createProduct = catchAsync(async (req, res) => {
 });
 
 const getProductById = catchAsync(async (req, res) => {
+  const user = req.user;
+
   const product = await Product.findById(req.params?.id);
+
+  if (user.role === USER_ROLE.USER && product?.addedBy !== user.id) {
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      'You can not view products added by different person.',
+    );
+  }
 
   sendResponse(res, {
     success: true,
@@ -41,6 +53,17 @@ const getProductById = catchAsync(async (req, res) => {
 });
 
 const updateProduct = catchAsync(async (req, res) => {
+  const user = req.user;
+
+  const isProduct = await Product.findById(req.params?.id).select('_id');
+
+  if (user.role === USER_ROLE.USER && isProduct?.addedBy !== user.id) {
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      'You can not update products added by different person.',
+    );
+  }
+
   const product = await Product.findByIdAndUpdate(req.params?.id, req.body, {
     new: true,
   });
@@ -54,6 +77,8 @@ const updateProduct = catchAsync(async (req, res) => {
 });
 
 const getAllProducts = catchAsync(async (req, res) => {
+  const user = req.user;
+
   // handling serch
   const searchQuery = Product.find({
     $or: ['name', 'model', 'description'].map((field) => ({
@@ -67,13 +92,26 @@ const getAllProducts = catchAsync(async (req, res) => {
   // Getts filter for counting documents
   const querycount = searchQuery.getFilter();
 
-  const products = await searchQuery
-    .find(mainQuery)
-    .sort(sort)
-    .skip(skip)
-    .limit(limit);
+  let products;
+  let total;
 
-  const total = await Product.countDocuments(querycount);
+  if (user.role === USER_ROLE.USER) {
+    products = await searchQuery
+      .find({ ...mainQuery, addedBy: user.id })
+      .sort(sort)
+      .skip(skip)
+      .limit(limit);
+
+    total = await Product.countDocuments({ ...mainQuery, addedBy: user.id });
+  } else {
+    products = await searchQuery
+      .find(mainQuery)
+      .sort(sort)
+      .skip(skip)
+      .limit(limit);
+
+    total = await Product.countDocuments(querycount);
+  }
 
   sendResponse(res, {
     success: true,
@@ -87,6 +125,21 @@ const getAllProducts = catchAsync(async (req, res) => {
 });
 
 const deleteProducts = catchAsync(async (req, res) => {
+  const user = req.user;
+
+  const products = await Product.find({
+    addedBy: { $in: req.body?.productIds },
+  }).select('addedBy');
+
+  products.forEach((product) => {
+    if (product.addedBy !== user.id) {
+      throw new AppError(
+        httpStatus.UNAUTHORIZED,
+        'You can not delete products added by other person.',
+      );
+    }
+  });
+
   await Product.deleteMany({
     _id: { $in: req.body?.productIds },
   });
