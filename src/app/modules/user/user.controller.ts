@@ -7,12 +7,16 @@ import { createToken } from '../../utils/token';
 import { User } from './user.model';
 import AppError from '../../errors/AppError';
 
-const isUserLoggedIn = catchAsync((req, res) => {
+const isUserLoggedIn = catchAsync(async (req, res) => {
+  const tokenUser = req.user;
+
+  const user = await User.findById(tokenUser.id);
+
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: 'User logged in.',
-    data: null,
+    data: user,
   });
 });
 
