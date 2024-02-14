@@ -16,6 +16,11 @@ const saleSchema = new Schema<TSale>(
       type: String,
       required: true,
     },
+    soldBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
     products: [
       {
         product: {

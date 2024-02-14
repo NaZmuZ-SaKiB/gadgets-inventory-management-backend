@@ -10,11 +10,12 @@ import { generateSalesQuery } from './sale.query';
 import { USER_ROLE } from '../user/user.constant';
 
 const createSale = catchAsync(async (req, res) => {
+  const user = req.user;
   const session = await startSession();
 
   try {
     session.startTransaction();
-    const sale = await Sale.create(req.body);
+    const sale = await Sale.create({ ...req.body, soldBy: user.id });
 
     if (!sale) {
       throw new AppError(
@@ -63,19 +64,19 @@ const getAllSales = catchAsync(async (req, res) => {
   let total;
 
   if (user.role === USER_ROLE.USER) {
-    sales = await Sale.find({ ...mainQuery, addedBy: user.id })
+    sales = await Sale.find({ ...mainQuery, soldBy: user.id })
       .sort(sort)
       .skip(skip)
       .limit(limit)
-      .populate('product');
+      .populate('products');
 
-    total = await Sale.countDocuments({ ...mainQuery, addedBy: user.id });
+    total = await Sale.countDocuments({ ...mainQuery, soldBy: user.id });
   } else {
     sales = await Sale.find(mainQuery)
       .sort(sort)
       .skip(skip)
       .limit(limit)
-      .populate('product');
+      .populate('products');
 
     total = await Sale.countDocuments(mainQuery);
   }
