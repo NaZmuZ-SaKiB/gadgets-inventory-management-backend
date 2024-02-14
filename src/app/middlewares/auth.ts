@@ -8,7 +8,8 @@ import { TUserRole } from '../modules/user/user.interface';
 
 const auth = (...requiredRoles: TUserRole[]) => {
   return catchAsync(async (req, res, next) => {
-    const token = req.headers.authorization?.replace('Bearer ', '');
+    const token = req.cookies?.jwt?.replace('Bearer ', '');
+
     if (!token) {
       throw new AppError(httpStatus.UNAUTHORIZED, 'You are not logged in.');
     }

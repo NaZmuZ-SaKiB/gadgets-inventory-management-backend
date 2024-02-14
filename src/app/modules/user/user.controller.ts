@@ -30,7 +30,7 @@ const signup = catchAsync(async (req, res) => {
   res.cookie('jwt', token, {
     secure: config.node_env === 'production',
     httpOnly: true,
-    sameSite: 'none',
+    // sameSite: 'none', // ! uncomment on production
   });
 
   sendResponse(res, {
@@ -70,7 +70,7 @@ const signin = catchAsync(async (req, res) => {
   res.cookie('jwt', token, {
     secure: config.node_env === 'production',
     httpOnly: true,
-    sameSite: 'none',
+    // sameSite: 'none', // ! uncomment on production
   });
 
   user.password = '';
