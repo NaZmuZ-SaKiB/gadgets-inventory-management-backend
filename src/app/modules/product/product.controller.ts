@@ -37,7 +37,7 @@ const getProductById = catchAsync(async (req, res) => {
 
   const product = await Product.findById(req.params?.id);
 
-  if (user.role === USER_ROLE.USER && product?.addedBy !== user.id) {
+  if (user.role === USER_ROLE.USER && product?.addedBy.toString() !== user.id) {
     throw new AppError(
       httpStatus.UNAUTHORIZED,
       'You can not view products added by different person.',
@@ -57,7 +57,10 @@ const updateProduct = catchAsync(async (req, res) => {
 
   const isProduct = await Product.findById(req.params?.id).select('_id');
 
-  if (user.role === USER_ROLE.USER && isProduct?.addedBy !== user.id) {
+  if (
+    user.role === USER_ROLE.USER &&
+    isProduct?.addedBy.toString() !== user.id
+  ) {
     throw new AppError(
       httpStatus.UNAUTHORIZED,
       'You can not update products added by different person.',
@@ -132,7 +135,7 @@ const deleteProducts = catchAsync(async (req, res) => {
   }).select('addedBy');
 
   products.forEach((product) => {
-    if (product.addedBy !== user.id) {
+    if (product.addedBy.toString() !== user.id) {
       throw new AppError(
         httpStatus.UNAUTHORIZED,
         'You can not delete products added by other person.',
