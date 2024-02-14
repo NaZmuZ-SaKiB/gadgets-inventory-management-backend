@@ -12,6 +12,10 @@ const saleSchema = new Schema<TSale>(
       type: Date,
       required: true,
     },
+    contactNo: {
+      type: String,
+      required: true,
+    },
     products: [
       {
         product: {

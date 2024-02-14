@@ -7,6 +7,7 @@ import httpStatus from 'http-status';
 import { Product } from '../product/product.model';
 import sendResponse from '../../utils/sendResponse';
 import { generateSalesQuery } from './sale.query';
+import { USER_ROLE } from '../user/user.constant';
 
 const createSale = catchAsync(async (req, res) => {
   const session = await startSession();
@@ -22,18 +23,15 @@ const createSale = catchAsync(async (req, res) => {
       );
     }
 
-    const product = await Product.findByIdAndUpdate(
-      req.body?.product,
-      {
-        $inc: { quantity: -req.body.quantity },
-      },
-      { new: true },
-    );
-
-    if (!product) {
-      throw new AppError(
-        httpStatus.INTERNAL_SERVER_ERROR,
-        'Failed to create sale.',
+    for (const item of req.body!.products) {
+      await Product.findByIdAndUpdate(
+        item.product,
+        {
+          $inc: { quantity: -item.quantity },
+        },
+        {
+          new: true,
+        },
       );
     }
 
@@ -58,14 +56,29 @@ const createSale = catchAsync(async (req, res) => {
 });
 
 const getAllSales = catchAsync(async (req, res) => {
-  const { mainQuery, skip, limit, sort } = generateSalesQuery(req.query);
-  const sales = await Sale.find(mainQuery)
-    .sort(sort)
-    .skip(skip)
-    .limit(limit)
-    .populate('product');
+  const user = req.user;
 
-  const total = await Sale.countDocuments(mainQuery);
+  const { mainQuery, skip, limit, sort } = generateSalesQuery(req.query);
+  let sales;
+  let total;
+
+  if (user.role === USER_ROLE.USER) {
+    sales = await Sale.find({ ...mainQuery, addedBy: user.id })
+      .sort(sort)
+      .skip(skip)
+      .limit(limit)
+      .populate('product');
+
+    total = await Sale.countDocuments({ ...mainQuery, addedBy: user.id });
+  } else {
+    sales = await Sale.find(mainQuery)
+      .sort(sort)
+      .skip(skip)
+      .limit(limit)
+      .populate('product');
+
+    total = await Sale.countDocuments(mainQuery);
+  }
 
   sendResponse(res, {
     success: true,
