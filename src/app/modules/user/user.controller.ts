@@ -143,10 +143,33 @@ const getAllUsers = catchAsync(async (req, res) => {
   });
 });
 
+const assignManager = catchAsync(async (req, res) => {
+  const { userId } = req.params;
+
+  await User.findByIdAndUpdate(
+    userId,
+    {
+      role: USER_ROLE.MANAGER,
+    },
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Manager assigned',
+    data: null,
+  });
+});
+
 export const UserController = {
   signup,
   signin,
   isUserLoggedIn,
   logout,
   getAllUsers,
+  assignManager,
 };
