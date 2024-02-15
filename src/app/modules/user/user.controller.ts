@@ -6,6 +6,7 @@ import sendResponse from '../../utils/sendResponse';
 import { createToken } from '../../utils/token';
 import { User } from './user.model';
 import AppError from '../../errors/AppError';
+import { USER_ROLE } from './user.constant';
 
 const isUserLoggedIn = catchAsync(async (req, res) => {
   const tokenUser = req.user;
@@ -103,9 +104,49 @@ const logout = catchAsync((req, res) => {
   });
 });
 
+const getAllUsers = catchAsync(async (req, res) => {
+  // handling serch
+  const searchQuery = User.find({
+    $or: ['name', 'email'].map((field) => ({
+      [field]: { $regex: req.query?.search ?? '', $options: 'i' },
+    })),
+  });
+
+  // Getts filter for counting documents
+  const querycount = searchQuery.getFilter();
+
+  // pagination
+  const page = Number(req.query?.page) || 1;
+  const limit = Number(req.query?.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  // Sorting
+  let sort: string = '-createdAt';
+  if (req.query?.sort) sort = req.query.sort as string;
+
+  const users = await searchQuery
+    .find({ role: USER_ROLE.USER })
+    .sort(sort)
+    .skip(skip)
+    .limit(limit);
+
+  const total = await User.countDocuments(querycount);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Users fetched.',
+    data: {
+      users,
+      total,
+    },
+  });
+});
+
 export const UserController = {
   signup,
   signin,
   isUserLoggedIn,
   logout,
+  getAllUsers,
 };
