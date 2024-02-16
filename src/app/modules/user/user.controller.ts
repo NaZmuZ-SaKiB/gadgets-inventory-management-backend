@@ -22,27 +22,13 @@ const isUserLoggedIn = catchAsync(async (req, res) => {
 });
 
 const signup = catchAsync(async (req, res) => {
-  const user = await User.create(req.body);
-
-  const token = createToken(
-    user._id.toString(),
-    user.role,
-    user.email,
-    config.jwt_access_secret as string,
-    config.jwt_access_expires_in as string,
-  );
-
-  res.cookie('jwt', token, {
-    secure: config.node_env === 'production',
-    httpOnly: true,
-    // sameSite: 'none', // ! uncomment on production
-  });
+  await User.create(req.body);
 
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
     message: 'Signup successful.',
-    data: user,
+    data: null,
   });
 });
 
@@ -125,7 +111,7 @@ const getAllUsers = catchAsync(async (req, res) => {
   if (req.query?.sort) sort = req.query.sort as string;
 
   const users = await searchQuery
-    .find({ role: USER_ROLE.USER })
+    .find({ role: { $ne: USER_ROLE.ADMIN } })
     .sort(sort)
     .skip(skip)
     .limit(limit);
@@ -146,10 +132,12 @@ const getAllUsers = catchAsync(async (req, res) => {
 const assignManager = catchAsync(async (req, res) => {
   const { userId } = req.params;
 
+  const user = await User.findById(userId).select('role');
+
   await User.findByIdAndUpdate(
     userId,
     {
-      role: USER_ROLE.MANAGER,
+      role: user?.role === 'user' ? USER_ROLE.MANAGER : USER_ROLE.USER,
     },
     {
       new: true,
