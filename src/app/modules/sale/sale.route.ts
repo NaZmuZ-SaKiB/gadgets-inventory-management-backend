@@ -6,6 +6,7 @@ const SaleRouter = Router();
 
 // GET
 SaleRouter.get('/', auth(), SaleController.getAllSales);
+SaleRouter.get('/count', auth(), SaleController.getSalesCount);
 
 // POST
 SaleRouter.post('/', auth(), SaleController.createSale);

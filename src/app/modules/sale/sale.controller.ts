@@ -89,7 +89,28 @@ const getAllSales = catchAsync(async (req, res) => {
   });
 });
 
+const getSalesCount = catchAsync(async (req, res) => {
+  const user = req.user;
+  let count;
+
+  const { mainQuery } = generateSalesQuery(req.query);
+
+  if (user.role === USER_ROLE.USER) {
+    count = await Sale.countDocuments({ ...mainQuery, soldBy: user.id });
+  } else {
+    count = await Sale.countDocuments(mainQuery);
+  }
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Got sales count',
+    data: { count },
+  });
+});
+
 export const SaleController = {
   createSale,
   getAllSales,
+  getSalesCount,
 };

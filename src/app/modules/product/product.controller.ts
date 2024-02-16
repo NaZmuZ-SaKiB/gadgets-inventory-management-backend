@@ -156,18 +156,21 @@ const deleteProducts = catchAsync(async (req, res) => {
 });
 
 const getProductsCount = catchAsync(async (req, res) => {
-  let count: number;
+  const user = req.user;
+  const query: Record<string, unknown> = {};
 
   // If quantity === 0 - get out of stock products. Other wise get in-stock products
   if (req.query?.quantity && Number(req.query?.quantity) !== 0) {
-    count = await Product.countDocuments({
-      quantity: { $gt: 0 },
-    });
+    query.quantity = { $gt: 0 };
   } else {
-    count = await Product.countDocuments({
-      quantity: 0,
-    });
+    query.quantity = 0;
   }
+
+  if (user.role === USER_ROLE.USER) {
+    query.addedBy = user.id;
+  }
+
+  const count = await Product.countDocuments(query);
 
   sendResponse(res, {
     success: true,
@@ -178,11 +181,19 @@ const getProductsCount = catchAsync(async (req, res) => {
 });
 
 const getProductCountPurchasedThisMonth = catchAsync(async (req, res) => {
-  const count = await Product.countDocuments({
+  const user = req.user;
+
+  const query: typeof req.query = {
     createdAt: {
       $gte: new Date(Date.now() - 29 * 24 * 60 * 60 * 1000).toISOString(),
     },
-  });
+  };
+
+  if (user.role === USER_ROLE.USER) {
+    query.addedBy = user.id;
+  }
+
+  const count = await Product.countDocuments({ ...query });
 
   sendResponse(res, {
     success: true,
