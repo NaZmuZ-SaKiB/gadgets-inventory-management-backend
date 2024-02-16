@@ -1,4 +1,4 @@
-export type TUserRole = 'user' | 'manager';
+export type TUserRole = 'user' | 'manager' | 'admin';
 
 export type TUser = {
   name: string;
