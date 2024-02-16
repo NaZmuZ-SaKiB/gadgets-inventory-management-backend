@@ -55,7 +55,7 @@ const getProductById = catchAsync(async (req, res) => {
 const updateProduct = catchAsync(async (req, res) => {
   const user = req.user;
 
-  const isProduct = await Product.findById(req.params?.id).select('_id');
+  const isProduct = await Product.findById(req.params?.id).select('addedBy');
 
   if (
     user.role === USER_ROLE.USER &&
