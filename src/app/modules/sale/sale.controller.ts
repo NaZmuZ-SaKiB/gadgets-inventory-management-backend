@@ -76,7 +76,7 @@ const getAllSales = catchAsync(async (req, res) => {
       .sort(sort)
       .skip(skip)
       .limit(limit)
-      .populate('products');
+      .populate('products.product');
 
     total = await Sale.countDocuments(mainQuery);
   }
