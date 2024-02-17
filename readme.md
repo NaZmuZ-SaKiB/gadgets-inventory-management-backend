@@ -28,15 +28,15 @@ This is a Gadgets inventory management backend project. The goal of this project
    - `npm install` or `yarn`
 3. Create a `.env` file in current directory and add following properties:
 
-- `NODE_ENV` = development/ production
-- `PORT` = (any port number)
-- `DATABASE_URL` = (your database url for connection)
-- `BCRYPT_SALT_ROUNDS` = 12
-- `FRONT_END_URL` = front end url
-- `JWT_ACCESS_SECRET` = secret for jwt
-- `JWT_ACCESS_EXPIRES_IN` = jwt expire time
-- Go to `./src/app/modules/user/user.controller.ts` file and find signin function.
-  Comment the line `sameSite: none` if you are using it in development mode.
+   - `NODE_ENV` = development/ production
+   - `PORT` = (any port number)
+   - `DATABASE_URL` = (your database url for connection)
+   - `BCRYPT_SALT_ROUNDS` = 12
+   - `FRONT_END_URL` = front end url
+   - `JWT_ACCESS_SECRET` = secret for jwt
+   - `JWT_ACCESS_EXPIRES_IN` = jwt expire time
+   - Go to `./src/app/modules/user/user.controller.ts` file and find signin function.
+     Comment the line `sameSite: none` if you are using it in development mode.
 
 4. Run the development server using following command:
    - `npm run dev` or `yarn dev`
