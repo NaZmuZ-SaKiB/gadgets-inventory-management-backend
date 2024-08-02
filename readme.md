@@ -22,9 +22,9 @@ This is a Gadgets inventory management backend project. The goal of this project
 ### Installation
 
 1. Clone this repo:
-   - `git clone https://github.com/Porgramming-Hero-web-course/l2-b2-assignment-6-backend-NaZmuZ-SaKiB.git`
+   - `git clone https://github.com/NaZmuZ-SaKiB/gadgets-inventory-management-backend.git`
 2. Install all necessary dependencies:
-   - `cd l2-b2-assignment-6-backend-NaZmuZ-SaKiB`
+   - `cd gadgets-inventory-management-backend`
    - `npm install` or `yarn`
 3. Create a `.env` file in current directory and add following properties:
 
