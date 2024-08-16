@@ -28,6 +28,34 @@ const createCategory = catchAsync(async (req, res) => {
   });
 });
 
+const updateCategory = catchAsync(async (req, res) => {
+  const isCategory = await Category.findOne({
+    name: req.body?.name?.toUpperCase(),
+  });
+
+  if (isCategory) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `Category : ${req.body?.name} already exists.`,
+    );
+  }
+
+  const category = await Category.findByIdAndUpdate(
+    req.params?.id,
+    {
+      name: req.body?.name?.toUpperCase(),
+    },
+    { new: true },
+  );
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Category Updated.',
+    data: category,
+  });
+});
+
 const getAllCategories = catchAsync(async (req, res) => {
   const categories = await Category.aggregate([
     {
@@ -67,4 +95,5 @@ const getAllCategories = catchAsync(async (req, res) => {
 export const CategoryController = {
   createCategory,
   getAllCategories,
+  updateCategory,
 };

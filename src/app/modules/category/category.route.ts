@@ -10,4 +10,7 @@ CategoryRouter.get('/', auth(), CategoryController.getAllCategories);
 // POST
 CategoryRouter.post('/', auth(), CategoryController.createCategory);
 
+// PATCH
+CategoryRouter.patch('/:id', auth(), CategoryController.updateCategory);
+
 export default CategoryRouter;

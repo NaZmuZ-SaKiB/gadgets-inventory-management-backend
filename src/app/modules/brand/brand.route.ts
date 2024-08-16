@@ -10,4 +10,7 @@ BrandRouter.get('/', auth(), BrandController.getAllBrands);
 // POST
 BrandRouter.post('/', auth(), BrandController.createBrand);
 
+// PATCH
+BrandRouter.patch('/:id', auth(), BrandController.updateBrand);
+
 export default BrandRouter;

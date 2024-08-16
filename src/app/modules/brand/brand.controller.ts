@@ -19,7 +19,33 @@ const createBrand = catchAsync(async (req, res) => {
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
-    message: 'Breand Created.',
+    message: 'Brand Created.',
+    data: brand,
+  });
+});
+
+const updateBrand = catchAsync(async (req, res) => {
+  const isBrand = await Brand.findOne({ name: req.body?.name?.toUpperCase() });
+
+  if (isBrand) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `Brand : ${req.body?.name} already exists.`,
+    );
+  }
+
+  const brand = await Brand.findByIdAndUpdate(
+    req.params?.id,
+    {
+      name: req.body?.name?.toUpperCase(),
+    },
+    { new: true },
+  );
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Brand updated.',
     data: brand,
   });
 });
@@ -63,4 +89,5 @@ const getAllBrands = catchAsync(async (req, res) => {
 export const BrandController = {
   createBrand,
   getAllBrands,
+  updateBrand,
 };

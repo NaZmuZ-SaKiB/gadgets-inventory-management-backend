@@ -62,7 +62,7 @@ const signin = catchAsync(async (req, res) => {
   res.cookie('jwt', token, {
     secure: config.node_env === 'production',
     httpOnly: true,
-    // sameSite: 'none', // ! uncomment on production
+    sameSite: 'none', // ! uncomment on production
   });
 
   user.password = '';
