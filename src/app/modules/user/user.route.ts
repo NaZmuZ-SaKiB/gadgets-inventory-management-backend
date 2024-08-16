@@ -8,6 +8,7 @@ const UserRouter = Router();
 // GET
 UserRouter.get('/', auth(USER_ROLE.ADMIN), UserController.getAllUsers);
 UserRouter.get('/status', auth(), UserController.isUserLoggedIn);
+UserRouter.get('/chart-data', auth(), UserController.getDashboardChartsData);
 
 // POST
 UserRouter.post(

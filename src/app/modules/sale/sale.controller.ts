@@ -8,6 +8,7 @@ import { Product } from '../product/product.model';
 import sendResponse from '../../utils/sendResponse';
 import { generateSalesQuery } from './sale.query';
 import { USER_ROLE } from '../user/user.constant';
+import { SaleService } from './sale.service';
 
 const createSale = catchAsync(async (req, res) => {
   const user = req.user;
@@ -80,6 +81,8 @@ const getAllSales = catchAsync(async (req, res) => {
 
     total = await Sale.countDocuments(mainQuery);
   }
+
+  await SaleService.getWeeklySales();
 
   sendResponse(res, {
     success: true,

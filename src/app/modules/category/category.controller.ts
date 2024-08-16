@@ -29,7 +29,32 @@ const createCategory = catchAsync(async (req, res) => {
 });
 
 const getAllCategories = catchAsync(async (req, res) => {
-  const categories = await Category.find();
+  const categories = await Category.aggregate([
+    {
+      $lookup: {
+        from: 'products',
+        localField: '_id',
+        foreignField: 'category',
+        as: 'products',
+        pipeline: [
+          {
+            $project: {
+              _id: 1,
+            },
+          },
+        ],
+      },
+    },
+    {
+      $sort: { updatedAt: -1 },
+    },
+    {
+      $project: {
+        name: 1,
+        productCount: { $size: '$products' },
+      },
+    },
+  ]);
 
   sendResponse(res, {
     success: true,

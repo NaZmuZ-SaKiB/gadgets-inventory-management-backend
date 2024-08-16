@@ -25,7 +25,32 @@ const createBrand = catchAsync(async (req, res) => {
 });
 
 const getAllBrands = catchAsync(async (req, res) => {
-  const brands = await Brand.find();
+  const brands = await Brand.aggregate([
+    {
+      $lookup: {
+        from: 'products',
+        localField: '_id',
+        foreignField: 'brand',
+        as: 'products',
+        pipeline: [
+          {
+            $project: {
+              _id: 1,
+            },
+          },
+        ],
+      },
+    },
+    {
+      $sort: { updatedAt: -1 },
+    },
+    {
+      $project: {
+        name: 1,
+        productCount: { $size: '$products' },
+      },
+    },
+  ]);
 
   sendResponse(res, {
     success: true,

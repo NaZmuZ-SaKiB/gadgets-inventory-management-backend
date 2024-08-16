@@ -7,6 +7,7 @@ import { createToken } from '../../utils/token';
 import { User } from './user.model';
 import AppError from '../../errors/AppError';
 import { USER_ROLE } from './user.constant';
+import { UserService } from './user.service';
 
 const isUserLoggedIn = catchAsync(async (req, res) => {
   const tokenUser = req.user;
@@ -61,7 +62,7 @@ const signin = catchAsync(async (req, res) => {
   res.cookie('jwt', token, {
     secure: config.node_env === 'production',
     httpOnly: true,
-    sameSite: 'none', // ! uncomment on production
+    // sameSite: 'none', // ! uncomment on production
   });
 
   user.password = '';
@@ -153,6 +154,17 @@ const assignManager = catchAsync(async (req, res) => {
   });
 });
 
+const getDashboardChartsData = catchAsync(async (req, res) => {
+  const chartsData = await UserService.getDashboardChartsData();
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Charts data fetched.',
+    data: chartsData,
+  });
+});
+
 export const UserController = {
   signup,
   signin,
@@ -160,4 +172,5 @@ export const UserController = {
   logout,
   getAllUsers,
   assignManager,
+  getDashboardChartsData,
 };
