@@ -18,6 +18,34 @@ const userSchema = new Schema<TUser>(
       trim: true,
       unique: true,
     },
+    dateOfBirth: String,
+    gender: {
+      type: String,
+      enum: ['male', 'female'],
+    },
+    phone: String,
+    permanentAddress: String,
+    presentAddress: String,
+    emergencyContact: {
+      name: String,
+      phone: String,
+      relationShip: String,
+    },
+    employmentStatus: {
+      type: String,
+      enum: ['full-time', 'part-time'],
+    },
+    workLocation: {
+      type: String,
+      enum: ['on-site', 'remote'],
+    },
+    employeeType: {
+      type: String,
+      enum: ['permanent', 'temporary', 'intern'],
+    },
+    salary: Number,
+    joiningDate: String,
+    image: String,
     password: {
       type: String,
       required: true,

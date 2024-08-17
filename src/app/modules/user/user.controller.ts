@@ -91,6 +91,37 @@ const logout = catchAsync((req, res) => {
   });
 });
 
+const getUserById = catchAsync(async (req, res) => {
+  const user = await User.findById(req.params?.id);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'User fetched.',
+    data: user,
+  });
+});
+
+const updateUser = catchAsync(async (req, res) => {
+  if (req.user?.id !== req.params?.id) {
+    if (req.user?.role === 'user') {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        'You are not allowed to update this user',
+      );
+    }
+  }
+
+  const user = await User.findByIdAndUpdate(req.params?.id, req.body);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'User Updated',
+    data: user,
+  });
+});
+
 const getAllUsers = catchAsync(async (req, res) => {
   // handling serch
   const searchQuery = User.find({
@@ -172,5 +203,7 @@ export const UserController = {
   logout,
   getAllUsers,
   assignManager,
+  updateUser,
   getDashboardChartsData,
+  getUserById,
 };
