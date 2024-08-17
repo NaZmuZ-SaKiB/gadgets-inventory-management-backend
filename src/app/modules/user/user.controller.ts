@@ -10,9 +10,7 @@ import { USER_ROLE } from './user.constant';
 import { UserService } from './user.service';
 
 const isUserLoggedIn = catchAsync(async (req, res) => {
-  const tokenUser = req.user;
-
-  const user = await User.findById(tokenUser.id);
+  const user = await User.findById(req.user?.id);
 
   sendResponse(res, {
     success: true,
