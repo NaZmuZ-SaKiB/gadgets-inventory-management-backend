@@ -21,10 +21,10 @@ UserRouter.post('/sign-in', UserController.signin);
 UserRouter.post('/sign-out', UserController.logout);
 
 // PATCH
-UserRouter.patch('/:id', auth(), UserController.updateUser);
 UserRouter.patch(
   '/assign-manager/:userId',
   auth(USER_ROLE.ADMIN),
   UserController.assignManager,
 );
+UserRouter.patch('/:id', auth(), UserController.updateUser);
 export default UserRouter;
