@@ -30,6 +30,7 @@ const userSchema = new Schema<TUser>(
       name: String,
       phone: String,
       relationShip: String,
+      occupation: String,
     },
     employmentStatus: {
       type: String,
